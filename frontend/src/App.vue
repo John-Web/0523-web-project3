@@ -2,10 +2,13 @@
   <div id="app">
     <div id="wrapper" >
     <div id="content">
-    <Icon type="ios-home" onclick="this.getJsonInfo()"/>
-    <Input search placeholder="Enter something..." />
-    <div v-for="(movie, index) in movies">
-    <div v-if="index >= start_index && index < end_index">
+    <div>
+      <span @click="all_movies(1)">
+        <Icon type="ios-home" size="24" style="width: auto"/>
+      </span>
+      <Input search placeholder="Enter something..." v-model="search_text" @click="search_movies" style="width: auto"/>
+    </div>
+    <div v-for="movie in movies">
     <h1>
       <span property="v:itemreviewed">{{movie.title}}</span>
       <span class="year">({{movie.year}})</span>
@@ -129,8 +132,7 @@
       </div>
     </div>
     </div>
-    </div>
-      <Page id="page" :total="data_count" :page-size="page_size" @on-change="change_page" show-elevator />
+    <Page id="page" :current="current_page" :total="data_count" :page-size="page_size" @on-change="change_page"/>
     </div>
     </div>
   </div>
@@ -144,15 +146,17 @@
         movies: '',
         site: "https://movie.douban.com/",
         rating_power_coefficient: 1.2,
-
-        data_count: 200,
+        init_page_size: 5,
+        init_data_count: 10000,
+        data_count: 10000,
         page_size: 5,
-        start_index: 0,
-        end_index: 5
-      }
+        current_page: 1,
+        search_mode: false,
+        search_text: ''
+      };
     },
     created: function() {
-      this.getJsonInfo()
+      this.all_movies(1);
     },
     methods:{
       getImages( _url ){
@@ -161,24 +165,47 @@
           return 'https://images.weserv.nl/?url=' + _u;
         }
       },
-      getJsonInfo () {
-      let params = new URLSearchParams();
-      params.append('start_index', this.start_index);
-      params.append('page_size', this.page_size);
-      this.axios.get('/api/getJsonInfo', {params: params})
-        .then((response) => {
-          for (let i = 0; i < this.page_size; i++){
-            response.data[i].poster = this.getImages(response.data[i].poster)
-          }
-          this.movies = response.data;
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      all_movies (index) {
+        this.current_page = index;
+        this.page_size = this.init_page_size;
+        this.data_count = this.init_data_count;
+        this.search_mode = false;
+        const start_index = this.init_page_size * (index - 1);
+        let params = new URLSearchParams();
+        params.append('start_index', start_index.toString());
+        params.append('page_size', this.init_page_size);
+        this.axios.get('/api/all_movies', {params: params})
+          .then((response) => {
+            for (let i = 0; i < this.page_size; i++){
+              response.data[i].poster = this.getImages(response.data[i].poster)
+            }
+            this.movies = response.data;
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      },
+      search_movies () {
+        this.search_mode = true;
+        let params = new URLSearchParams();
+        params.append('search_text', text);
+        this.axios.get('/api/search_movies', {params: params})
+          .then((response) => {
+            this.data_count  = response.data.length;
+            this.page_size  = response.data.length;
+            for (let i = 0; i < this.page_size; i++){
+              response.data.movies[i].poster = this.getImages(response.data.movies[i].poster)
+            }
+            this.movies = response.data.movies;
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       },
       change_page(index){
-        this.start_index = this.page_size * (index - 1);
-        this.end_index = this.page_size * index;
+        if(this.search_mode == false){
+          this.all_movies(index);
+        }
       }
     }
   }
