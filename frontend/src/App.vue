@@ -6,8 +6,11 @@
       <span @click="all_movies(1)">
         <Icon type="ios-home" size="24" style="width: auto"/>
       </span>
-      <Input search placeholder="Enter something..." v-model="search_text" @click="search_movies" style="width: auto"/>
+      <Input placeholder="Search something..." v-model="search_text"
+             @keyup.enter.native="search_movies()" style="width: auto"/>
+      <Button type="primary" @click.native="search_movies()">搜索</Button>
     </div>
+    <h2>{{message_text}}</h2>
     <div v-for="movie in movies">
     <h1>
       <span property="v:itemreviewed">{{movie.title}}</span>
@@ -132,7 +135,8 @@
       </div>
     </div>
     </div>
-    <Page id="page" :current="current_page" :total="data_count" :page-size="page_size" @on-change="change_page"/>
+    <Page id="page" :current="current_page" :total="data_count" :page-size="page_size"
+          @on-change="change_page" show-elevator />
     </div>
     </div>
   </div>
@@ -152,7 +156,8 @@
         page_size: 5,
         current_page: 1,
         search_mode: false,
-        search_text: ''
+        search_text: '',
+        message_text: ''
       };
     },
     created: function() {
@@ -166,6 +171,7 @@
         }
       },
       all_movies (index) {
+        this.message_text = "正在载入第" + this.current_page + "页";
         this.current_page = index;
         this.page_size = this.init_page_size;
         this.data_count = this.init_data_count;
@@ -180,15 +186,21 @@
               response.data[i].poster = this.getImages(response.data[i].poster)
             }
             this.movies = response.data;
+            this.message_text = "载入第" + this.current_page + "页完成";
           })
           .catch(function (error) {
             console.log(error);
+            this.message_text = "载入第" + this.current_page + "页失败";
           });
+
       },
       search_movies () {
+        const search_T = this.search_text;
+        if(search_T == "") return;
+        this.message_text = "正在查询包含关键字\"" + search_T + "\"的电影";
         this.search_mode = true;
         let params = new URLSearchParams();
-        params.append('search_text', text);
+        params.append('search_text', this.search_text);
         this.axios.get('/api/search_movies', {params: params})
           .then((response) => {
             this.data_count  = response.data.length;
@@ -197,9 +209,11 @@
               response.data.movies[i].poster = this.getImages(response.data.movies[i].poster)
             }
             this.movies = response.data.movies;
+            this.message_text = "查询到包含关键字\"" + search_T + "\"的电影共" + response.data.length + "条";
           })
           .catch(function (error) {
             console.log(error);
+            this.message_text = "查询到包含关键字\"" + search_T + "\"的电影失败";
           });
       },
       change_page(index){
