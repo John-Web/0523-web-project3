@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b63439e4-e41e-460a-9fd7-e91285c3a9d0" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -286,11 +285,13 @@
       <workItem from="1559347622045" duration="1128000" />
       <workItem from="1559351954144" duration="831000" />
       <workItem from="1559352963017" duration="865000" />
+      <workItem from="1559353983750" duration="1493000" />
+      <workItem from="1559355906680" duration="630000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35813000" />
+    <option name="totallyTimeSpent" value="37936000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -304,7 +305,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1381" height="885" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13886793" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.14339623" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
